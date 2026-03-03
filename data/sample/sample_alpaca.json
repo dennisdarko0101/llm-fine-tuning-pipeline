@@ -1,0 +1,262 @@
+[
+  {
+    "instruction": "Write a Python function that checks if a number is prime.",
+    "input": "",
+    "output": "```python\ndef is_prime(n: int) -> bool:\n    if n < 2:\n        return False\n    if n < 4:\n        return True\n    if n % 2 == 0 or n % 3 == 0:\n        return False\n    i = 5\n    while i * i <= n:\n        if n % i == 0 or n % (i + 2) == 0:\n            return False\n        i += 6\n    return True\n```\nThis function uses trial division with the 6k +/- 1 optimization, giving O(sqrt(n)) time complexity."
+  },
+  {
+    "instruction": "Explain the difference between a stack and a queue.",
+    "input": "",
+    "output": "A stack is a Last-In-First-Out (LIFO) data structure where elements are added and removed from the same end (the top). Think of a stack of plates. A queue is a First-In-First-Out (FIFO) data structure where elements are added at the rear and removed from the front, like a line of people waiting. Stacks support push/pop operations, while queues support enqueue/dequeue."
+  },
+  {
+    "instruction": "Convert the following temperature from Celsius to Fahrenheit.",
+    "input": "37 degrees Celsius",
+    "output": "37 degrees Celsius is equal to 98.6 degrees Fahrenheit. The formula is F = (C × 9/5) + 32, so F = (37 × 9/5) + 32 = 66.6 + 32 = 98.6°F."
+  },
+  {
+    "instruction": "Summarize the main idea of the following paragraph.",
+    "input": "Machine learning is a subset of artificial intelligence that enables systems to learn and improve from experience without being explicitly programmed. It focuses on the development of algorithms that can access data and use it to learn for themselves. The process begins with observations or data, such as examples, direct experience, or instruction, to look for patterns in data and make better decisions in the future.",
+    "output": "Machine learning is an AI discipline where systems automatically learn and improve from data and experience rather than following explicit programming, using algorithms that identify patterns to make increasingly better decisions."
+  },
+  {
+    "instruction": "Write a SQL query to find the top 5 customers by total order amount.",
+    "input": "Tables: customers (id, name, email), orders (id, customer_id, amount, created_at)",
+    "output": "```sql\nSELECT c.id, c.name, c.email, SUM(o.amount) AS total_amount\nFROM customers c\nJOIN orders o ON c.id = o.customer_id\nGROUP BY c.id, c.name, c.email\nORDER BY total_amount DESC\nLIMIT 5;\n```"
+  },
+  {
+    "instruction": "What are the SOLID principles in software engineering?",
+    "input": "",
+    "output": "SOLID is an acronym for five object-oriented design principles:\n\n1. **Single Responsibility Principle (SRP)**: A class should have only one reason to change.\n2. **Open/Closed Principle (OCP)**: Software entities should be open for extension but closed for modification.\n3. **Liskov Substitution Principle (LSP)**: Subtypes must be substitutable for their base types.\n4. **Interface Segregation Principle (ISP)**: Clients shouldn't be forced to depend on interfaces they don't use.\n5. **Dependency Inversion Principle (DIP)**: High-level modules shouldn't depend on low-level modules; both should depend on abstractions."
+  },
+  {
+    "instruction": "Solve the following math problem step by step.",
+    "input": "If a train travels at 60 mph for the first half of a journey and 40 mph for the second half, what is the average speed for the entire journey?",
+    "output": "The average speed is NOT simply (60+40)/2 = 50 mph, because the train spends more time on the slower half.\n\nLet the total distance be D.\n- Time for first half: (D/2) / 60 = D/120 hours\n- Time for second half: (D/2) / 40 = D/80 hours\n- Total time: D/120 + D/80 = 2D/240 + 3D/240 = 5D/240 = D/48 hours\n\nAverage speed = Total distance / Total time = D / (D/48) = 48 mph."
+  },
+  {
+    "instruction": "Write a haiku about programming.",
+    "input": "",
+    "output": "Bugs hide in the code,\nDebugging through endless night—\nTests finally pass."
+  },
+  {
+    "instruction": "Explain what a REST API is to a beginner.",
+    "input": "",
+    "output": "A REST API is a way for two computer systems to communicate over the internet using standard HTTP methods. Think of it like a waiter in a restaurant: you (the client) make a request from a menu (the API endpoints), the waiter carries it to the kitchen (the server), and brings back your food (the response). REST uses standard operations: GET (read data), POST (create data), PUT (update data), and DELETE (remove data). Data is typically exchanged in JSON format."
+  },
+  {
+    "instruction": "Classify the sentiment of the following review.",
+    "input": "The battery life is amazing and the camera quality exceeded my expectations. However, the phone gets quite warm during gaming and the price is steep for what you get.",
+    "output": "Mixed/Neutral sentiment. The review contains both positive elements (battery life, camera quality) and negative aspects (overheating during gaming, high price). Overall it leans slightly positive since the core functionality is praised, while the complaints are about secondary use cases and value perception."
+  },
+  {
+    "instruction": "Implement a binary search algorithm in Python.",
+    "input": "",
+    "output": "```python\ndef binary_search(arr: list[int], target: int) -> int:\n    \"\"\"Return index of target in sorted array, or -1 if not found.\"\"\"\n    left, right = 0, len(arr) - 1\n    while left <= right:\n        mid = left + (right - left) // 2\n        if arr[mid] == target:\n            return mid\n        elif arr[mid] < target:\n            left = mid + 1\n        else:\n            right = mid - 1\n    return -1\n```\nTime complexity: O(log n). Space complexity: O(1). The key insight is using `left + (right - left) // 2` instead of `(left + right) // 2` to avoid integer overflow."
+  },
+  {
+    "instruction": "What is the time complexity of the following code?",
+    "input": "```python\ndef mystery(n):\n    count = 0\n    i = 1\n    while i < n:\n        j = 1\n        while j < n:\n            count += 1\n            j *= 2\n        i *= 2\n    return count\n```",
+    "output": "The time complexity is O(log²n).\n\nThe outer loop runs log₂(n) times because i doubles each iteration (1, 2, 4, 8, ..., n). The inner loop also runs log₂(n) times because j doubles each iteration. Since the inner loop runs completely for each outer iteration, the total is log(n) × log(n) = O(log²n)."
+  },
+  {
+    "instruction": "Translate the following English text to French.",
+    "input": "The weather is beautiful today. Let's go for a walk in the park.",
+    "output": "Le temps est magnifique aujourd'hui. Allons nous promener dans le parc."
+  },
+  {
+    "instruction": "Write a regular expression to validate email addresses.",
+    "input": "",
+    "output": "A practical regex for email validation:\n\n```\n^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$\n```\n\nBreakdown:\n- `^[a-zA-Z0-9._%+-]+` — local part: alphanumeric plus allowed special chars\n- `@` — literal @ symbol\n- `[a-zA-Z0-9.-]+` — domain name: alphanumeric, dots, hyphens\n- `\\.[a-zA-Z]{2,}$` — TLD: dot followed by 2+ letters\n\nNote: RFC 5322 compliant email validation is much more complex. For production use, it's better to send a confirmation email than to rely solely on regex."
+  },
+  {
+    "instruction": "Explain the CAP theorem in distributed systems.",
+    "input": "",
+    "output": "The CAP theorem states that a distributed system can simultaneously provide at most two of three guarantees:\n\n1. **Consistency**: Every read receives the most recent write or an error.\n2. **Availability**: Every request receives a non-error response, without guarantee it contains the most recent write.\n3. **Partition Tolerance**: The system continues to operate despite network partitions between nodes.\n\nSince network partitions are inevitable in distributed systems, the real choice is between CP (consistency + partition tolerance, e.g., HBase, MongoDB) and AP (availability + partition tolerance, e.g., Cassandra, DynamoDB). Most modern systems choose AP with eventual consistency."
+  },
+  {
+    "instruction": "Debug the following Python code that should reverse a linked list.",
+    "input": "```python\ndef reverse_list(head):\n    prev = None\n    current = head\n    while current:\n        current.next = prev\n        prev = current\n        current = current.next\n    return prev\n```",
+    "output": "The bug is that `current.next` is overwritten before saving the reference to the next node. After `current.next = prev`, the original next pointer is lost, so `current = current.next` just assigns `prev` back.\n\nFixed version:\n```python\ndef reverse_list(head):\n    prev = None\n    current = head\n    while current:\n        next_node = current.next  # Save next before overwriting\n        current.next = prev\n        prev = current\n        current = next_node       # Use saved reference\n    return prev\n```"
+  },
+  {
+    "instruction": "Create a Dockerfile for a Python FastAPI application.",
+    "input": "",
+    "output": "```dockerfile\nFROM python:3.12-slim\n\nWORKDIR /app\n\n# Install dependencies first for better layer caching\nCOPY requirements.txt .\nRUN pip install --no-cache-dir -r requirements.txt\n\n# Copy application code\nCOPY . .\n\n# Create non-root user for security\nRUN adduser --disabled-password --gecos '' appuser\nUSER appuser\n\nEXPOSE 8000\n\nCMD [\"uvicorn\", \"main:app\", \"--host\", \"0.0.0.0\", \"--port\", \"8000\"]\n```\nKey practices: slim base image for smaller size, separate COPY for requirements to leverage Docker layer caching, non-root user for security, and no-cache-dir to reduce image size."
+  },
+  {
+    "instruction": "What is the difference between concurrency and parallelism?",
+    "input": "",
+    "output": "**Concurrency** is about dealing with multiple things at once — it's a design pattern where tasks can start, run, and complete in overlapping time periods. A single-core CPU achieves concurrency through context switching between tasks.\n\n**Parallelism** is about doing multiple things at once — it requires multiple processing units (cores/CPUs) executing simultaneously.\n\nAnalogy: A single chef juggling multiple dishes (checking oven, stirring pot, chopping) is concurrency. Multiple chefs each working on a different dish simultaneously is parallelism.\n\nIn Python: `asyncio` provides concurrency (single thread, cooperative multitasking), while `multiprocessing` provides parallelism (multiple processes on multiple cores). Threading in Python is concurrent but not parallel for CPU-bound tasks due to the GIL."
+  },
+  {
+    "instruction": "Extract the key entities from the following text.",
+    "input": "Apple Inc. announced its Q4 2024 earnings on October 31st, reporting revenue of $94.9 billion. CEO Tim Cook highlighted strong iPhone 16 sales in Greater China and the upcoming Apple Intelligence features powered by their M4 chip architecture.",
+    "output": "**Organizations**: Apple Inc.\n**People**: Tim Cook (CEO)\n**Products**: iPhone 16, Apple Intelligence, M4 chip\n**Financial**: Revenue $94.9 billion (Q4 2024)\n**Locations**: Greater China\n**Dates**: October 31st, Q4 2024"
+  },
+  {
+    "instruction": "Write a Python decorator that measures function execution time.",
+    "input": "",
+    "output": "```python\nimport functools\nimport time\nfrom typing import Any, Callable\n\ndef timer(func: Callable[..., Any]) -> Callable[..., Any]:\n    \"\"\"Decorator that prints function execution time.\"\"\"\n    @functools.wraps(func)\n    def wrapper(*args: Any, **kwargs: Any) -> Any:\n        start = time.perf_counter()\n        result = func(*args, **kwargs)\n        elapsed = time.perf_counter() - start\n        print(f\"{func.__name__} took {elapsed:.4f}s\")\n        return result\n    return wrapper\n\n# Usage:\n@timer\ndef slow_function():\n    time.sleep(1)\n    return \"done\"\n```\n`functools.wraps` preserves the original function's name and docstring. `time.perf_counter()` is preferred over `time.time()` for measuring short durations due to higher resolution."
+  },
+  {
+    "instruction": "Explain gradient descent in simple terms.",
+    "input": "",
+    "output": "Gradient descent is an optimization algorithm used to find the minimum of a function. Imagine you're blindfolded on a hilly landscape and want to reach the lowest valley:\n\n1. **Feel the slope** beneath your feet (compute the gradient/derivative)\n2. **Take a step downhill** in the steepest direction (update parameters)\n3. **Repeat** until you reach a flat area (convergence)\n\nThe **learning rate** controls step size — too large and you overshoot, too small and you converge slowly. Variants include:\n- **SGD**: Use one random sample per step (noisy but fast)\n- **Mini-batch**: Use a small batch (balance of speed and stability)\n- **Adam**: Adaptive learning rates per parameter (most commonly used)"
+  },
+  {
+    "instruction": "Rewrite the following code to be more Pythonic.",
+    "input": "```python\nresult = []\nfor i in range(len(numbers)):\n    if numbers[i] % 2 == 0:\n        result.append(numbers[i] ** 2)\n```",
+    "output": "```python\nresult = [x ** 2 for x in numbers if x % 2 == 0]\n```\nThis list comprehension is more Pythonic because it:\n1. Eliminates the need for manual index tracking with `range(len(...))`\n2. Combines filtering and transformation in a single expression\n3. Is more readable and idiomatic Python\n4. Is also slightly faster due to optimized bytecode for comprehensions"
+  },
+  {
+    "instruction": "What are the main differences between TCP and UDP?",
+    "input": "",
+    "output": "**TCP (Transmission Control Protocol)**:\n- Connection-oriented (requires handshake)\n- Guarantees delivery and ordering\n- Flow control and congestion management\n- Higher overhead, slower\n- Use cases: web browsing, email, file transfer\n\n**UDP (User Datagram Protocol)**:\n- Connectionless (fire and forget)\n- No delivery or ordering guarantees\n- No flow control\n- Lower overhead, faster\n- Use cases: video streaming, gaming, DNS, VoIP\n\nKey trade-off: TCP prioritizes reliability; UDP prioritizes speed. Choose TCP when every packet matters (downloading a file), UDP when speed matters more than completeness (live video where a dropped frame is acceptable)."
+  },
+  {
+    "instruction": "Write unit tests for a function that calculates the factorial of a number.",
+    "input": "```python\ndef factorial(n: int) -> int:\n    if n < 0:\n        raise ValueError(\"Factorial not defined for negative numbers\")\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)\n```",
+    "output": "```python\nimport pytest\n\ndef test_factorial_zero():\n    assert factorial(0) == 1\n\ndef test_factorial_one():\n    assert factorial(1) == 1\n\ndef test_factorial_small():\n    assert factorial(5) == 120\n\ndef test_factorial_larger():\n    assert factorial(10) == 3628800\n\ndef test_factorial_negative():\n    with pytest.raises(ValueError, match=\"negative\"):\n        factorial(-1)\n\ndef test_factorial_two():\n    assert factorial(2) == 2\n```\nThese tests cover: base cases (0, 1), normal cases, larger values, and error handling for invalid input."
+  },
+  {
+    "instruction": "Explain the concept of database normalization.",
+    "input": "",
+    "output": "Database normalization organizes tables to reduce data redundancy and improve integrity. The main normal forms are:\n\n**1NF**: Each column contains atomic (indivisible) values; no repeating groups. Instead of a column with \"tag1, tag2\", create a separate tags table.\n\n**2NF**: Meets 1NF + every non-key column depends on the entire primary key (no partial dependencies). Relevant for composite keys.\n\n**3NF**: Meets 2NF + no transitive dependencies. If column A determines B and B determines C, then C should be in a separate table.\n\n**BCNF**: Stricter 3NF where every determinant is a candidate key.\n\nTrade-off: Higher normalization reduces redundancy but increases JOIN complexity. Many production systems denormalize strategically for read performance while maintaining normalized write paths."
+  },
+  {
+    "instruction": "Generate a JSON schema for a user profile object.",
+    "input": "The profile should include: name, email, age, bio (optional), list of interests, and account creation date.",
+    "output": "```json\n{\n  \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"name\": {\n      \"type\": \"string\",\n      \"minLength\": 1,\n      \"maxLength\": 100\n    },\n    \"email\": {\n      \"type\": \"string\",\n      \"format\": \"email\"\n    },\n    \"age\": {\n      \"type\": \"integer\",\n      \"minimum\": 0,\n      \"maximum\": 150\n    },\n    \"bio\": {\n      \"type\": \"string\",\n      \"maxLength\": 500\n    },\n    \"interests\": {\n      \"type\": \"array\",\n      \"items\": { \"type\": \"string\" },\n      \"uniqueItems\": true\n    },\n    \"created_at\": {\n      \"type\": \"string\",\n      \"format\": \"date-time\"\n    }\n  },\n  \"required\": [\"name\", \"email\", \"age\", \"interests\", \"created_at\"]\n}\n```"
+  },
+  {
+    "instruction": "What is the difference between a process and a thread?",
+    "input": "",
+    "output": "A **process** is an independent program execution with its own memory space, file handles, and system resources. Processes are isolated from each other — one crashing doesn't affect others.\n\nA **thread** is a lightweight unit of execution within a process. Threads within the same process share memory, file handles, and other resources.\n\nKey differences:\n- **Memory**: Processes have separate address spaces; threads share memory\n- **Creation cost**: Processes are expensive to create; threads are lightweight\n- **Communication**: Inter-process communication (IPC) is complex (pipes, sockets); threads can communicate via shared memory directly\n- **Safety**: Processes are isolated (safer); threads need synchronization (mutexes, locks) to avoid race conditions\n- **Failure**: One thread crashing can take down all threads in the process"
+  },
+  {
+    "instruction": "Write a Git commit message for the following changes.",
+    "input": "Added rate limiting middleware to the Express.js API server. The middleware limits each IP to 100 requests per 15-minute window. Also added a custom error response for rate-limited requests that includes a Retry-After header.",
+    "output": "```\nAdd IP-based rate limiting middleware to API server\n\nImplement rate limiting with 100 requests per 15-minute window per IP\naddress. Rate-limited responses return 429 status with a Retry-After\nheader indicating when the client can retry.\n```\nThis follows conventional commit practices: imperative mood in the subject line, blank line separator, and body explaining what and why."
+  },
+  {
+    "instruction": "Explain what a closure is in JavaScript with an example.",
+    "input": "",
+    "output": "A closure is a function that remembers and can access variables from its outer (enclosing) scope even after the outer function has finished executing.\n\n```javascript\nfunction createCounter() {\n  let count = 0; // This variable is \"closed over\"\n  return {\n    increment: () => ++count,\n    getCount: () => count\n  };\n}\n\nconst counter = createCounter();\nconsole.log(counter.increment()); // 1\nconsole.log(counter.increment()); // 2\nconsole.log(counter.getCount());  // 2\n```\n\nHere, `increment` and `getCount` form closures over the `count` variable. Even though `createCounter` has returned, the inner functions retain access to `count`. This enables data privacy — `count` cannot be accessed directly from outside."
+  },
+  {
+    "instruction": "Calculate the space complexity of the following algorithm.",
+    "input": "```python\ndef merge_sort(arr):\n    if len(arr) <= 1:\n        return arr\n    mid = len(arr) // 2\n    left = merge_sort(arr[:mid])\n    right = merge_sort(arr[mid:])\n    return merge(left, right)\n```",
+    "output": "The space complexity is **O(n log n)** in the worst case for this implementation, though it can be analyzed as O(n).\n\n- Each recursive level creates new sub-arrays via slicing (`arr[:mid]` and `arr[mid:]`), which copies elements\n- The recursion depth is O(log n)\n- At each level, the total size of all sub-arrays is O(n)\n- However, slicing in Python creates copies, so each level allocates O(n) space\n- Since Python's garbage collector can reclaim arrays from completed recursive calls, the peak usage is O(n) for the merge buffers plus O(log n) for the call stack\n\nAn in-place merge sort would reduce space to O(log n) for the call stack only."
+  },
+  {
+    "instruction": "Write a bash one-liner to find the 10 largest files in a directory recursively.",
+    "input": "",
+    "output": "```bash\nfind . -type f -exec du -h {} + | sort -rh | head -10\n```\n\nBreakdown:\n- `find . -type f` — find all regular files recursively from current directory\n- `-exec du -h {} +` — get human-readable file sizes (batched for efficiency)\n- `sort -rh` — sort in reverse order, human-numeric (understands K, M, G suffixes)\n- `head -10` — show only the top 10\n\nAlternative using `find` with `-printf` (GNU):\n```bash\nfind . -type f -printf '%s %p\\n' | sort -rn | head -10\n```\nThis version outputs sizes in bytes and is faster since it doesn't fork `du`."
+  },
+  {
+    "instruction": "Explain the Observer design pattern.",
+    "input": "",
+    "output": "The Observer pattern defines a one-to-many dependency between objects: when the subject (observable) changes state, all registered observers are notified automatically.\n\n**Components**:\n- **Subject**: Maintains a list of observers and notifies them of state changes\n- **Observer**: Defines an update interface for objects that should be notified\n\n**Example**: A weather station (subject) broadcasts temperature updates to display panels, logging systems, and alert services (observers).\n\n**Real-world uses**: Event systems in UI frameworks, pub/sub messaging, React's state management, Node.js EventEmitter.\n\n**Benefits**: Loose coupling between subject and observers, easy to add new observers without modifying the subject.\n\n**Drawbacks**: Can cause memory leaks if observers aren't unregistered, potential cascade of unexpected updates."
+  },
+  {
+    "instruction": "Fix the security vulnerability in this code.",
+    "input": "```python\nimport sqlite3\n\ndef get_user(username):\n    conn = sqlite3.connect('users.db')\n    cursor = conn.cursor()\n    query = f\"SELECT * FROM users WHERE username = '{username}'\"\n    cursor.execute(query)\n    return cursor.fetchone()\n```",
+    "output": "The code is vulnerable to **SQL injection**. An attacker could pass `' OR '1'='1` as the username to dump all users, or `'; DROP TABLE users; --` to destroy data.\n\n**Fixed version using parameterized queries:**\n```python\nimport sqlite3\n\ndef get_user(username: str):\n    conn = sqlite3.connect('users.db')\n    cursor = conn.cursor()\n    cursor.execute(\"SELECT * FROM users WHERE username = ?\", (username,))\n    return cursor.fetchone()\n```\n\nKey changes:\n1. Use `?` placeholder instead of f-string interpolation\n2. Pass parameters as a tuple to `execute()`\n3. The database driver handles escaping, preventing injection\n\nThis applies to all databases — never concatenate user input into SQL strings."
+  },
+  {
+    "instruction": "Describe the architecture of a microservices-based e-commerce system.",
+    "input": "",
+    "output": "A microservices e-commerce architecture typically includes:\n\n**Core Services**:\n- **API Gateway**: Entry point, routing, rate limiting, authentication\n- **User Service**: Registration, login, profile management (owns users DB)\n- **Product Catalog Service**: Products, categories, search (Elasticsearch + PostgreSQL)\n- **Cart Service**: Shopping cart management (Redis for speed)\n- **Order Service**: Order processing, status tracking (PostgreSQL)\n- **Payment Service**: Payment processing, refunds (integrates with Stripe/PayPal)\n- **Inventory Service**: Stock management, reservations\n- **Notification Service**: Email, SMS, push notifications (async via message queue)\n\n**Infrastructure**:\n- **Message Broker** (Kafka/RabbitMQ): Async communication between services\n- **Service Discovery** (Consul/Eureka): Dynamic service registration\n- **Load Balancer**: Distribute traffic across service instances\n- **Centralized Logging** (ELK Stack): Aggregated logs from all services\n- **Distributed Tracing** (Jaeger): Request tracking across services"
+  },
+  {
+    "instruction": "Write a Python context manager for database transactions.",
+    "input": "",
+    "output": "```python\nfrom contextlib import contextmanager\nfrom typing import Generator\nimport sqlite3\n\n@contextmanager\ndef transaction(db_path: str) -> Generator[sqlite3.Cursor, None, None]:\n    \"\"\"Context manager that commits on success, rolls back on error.\"\"\"\n    conn = sqlite3.connect(db_path)\n    cursor = conn.cursor()\n    try:\n        yield cursor\n        conn.commit()\n    except Exception:\n        conn.rollback()\n        raise\n    finally:\n        conn.close()\n\n# Usage:\nwith transaction('app.db') as cursor:\n    cursor.execute('INSERT INTO users (name) VALUES (?)', ('Alice',))\n    cursor.execute('INSERT INTO logs (action) VALUES (?)', ('user_created',))\n    # Both succeed or both roll back\n```\nThe `try/except/finally` pattern ensures: commit on success, rollback on any exception, and connection cleanup regardless of outcome."
+  },
+  {
+    "instruction": "What is the difference between symmetric and asymmetric encryption?",
+    "input": "",
+    "output": "**Symmetric Encryption** uses the same key for both encryption and decryption.\n- Algorithms: AES, ChaCha20, 3DES\n- Fast and efficient for large data\n- Challenge: How to securely share the key with the other party\n- Use case: Encrypting files, database encryption, TLS data transfer\n\n**Asymmetric Encryption** uses a key pair: public key (encrypt) and private key (decrypt).\n- Algorithms: RSA, ECC, Ed25519\n- Slower, higher computational cost\n- Solves key distribution: public key can be shared openly\n- Use case: Key exchange, digital signatures, SSH, HTTPS handshake\n\n**In practice**, both are used together (hybrid encryption): asymmetric encryption secures the exchange of a symmetric key, then symmetric encryption handles the actual data. This is exactly how TLS/HTTPS works."
+  },
+  {
+    "instruction": "Refactor this code to use the Strategy pattern.",
+    "input": "```python\ndef calculate_price(base_price, customer_type):\n    if customer_type == 'regular':\n        return base_price\n    elif customer_type == 'premium':\n        return base_price * 0.9\n    elif customer_type == 'vip':\n        return base_price * 0.8\n    elif customer_type == 'employee':\n        return base_price * 0.7\n    else:\n        raise ValueError(f\"Unknown customer type: {customer_type}\")\n```",
+    "output": "```python\nfrom abc import ABC, abstractmethod\n\nclass PricingStrategy(ABC):\n    @abstractmethod\n    def calculate(self, base_price: float) -> float: ...\n\nclass RegularPricing(PricingStrategy):\n    def calculate(self, base_price: float) -> float:\n        return base_price\n\nclass PremiumPricing(PricingStrategy):\n    def calculate(self, base_price: float) -> float:\n        return base_price * 0.9\n\nclass VIPPricing(PricingStrategy):\n    def calculate(self, base_price: float) -> float:\n        return base_price * 0.8\n\nclass EmployeePricing(PricingStrategy):\n    def calculate(self, base_price: float) -> float:\n        return base_price * 0.7\n\n# Usage:\nstrategies = {\n    'regular': RegularPricing(),\n    'premium': PremiumPricing(),\n    'vip': VIPPricing(),\n    'employee': EmployeePricing(),\n}\n\ndef calculate_price(base_price: float, customer_type: str) -> float:\n    strategy = strategies.get(customer_type)\n    if not strategy:\n        raise ValueError(f\"Unknown customer type: {customer_type}\")\n    return strategy.calculate(base_price)\n```\nNew pricing tiers can be added without modifying existing code (Open/Closed Principle)."
+  },
+  {
+    "instruction": "Explain how a hash table works internally.",
+    "input": "",
+    "output": "A hash table stores key-value pairs using an array and a hash function:\n\n1. **Hash Function**: Converts a key into an array index. Example: `index = hash(key) % array_size`\n\n2. **Storage**: The value is stored at the computed index in the underlying array.\n\n3. **Collision Handling** (when two keys map to the same index):\n   - **Chaining**: Each array slot holds a linked list of entries\n   - **Open Addressing**: Probe for the next empty slot (linear probing, quadratic probing, double hashing)\n\n4. **Resizing**: When the load factor (entries/capacity) exceeds a threshold (typically 0.75), the table doubles in size and rehashes all entries.\n\n**Performance**:\n- Average case: O(1) for insert, lookup, delete\n- Worst case: O(n) when all keys collide\n- Good hash functions minimize collisions\n\nPython's `dict` uses open addressing with random probing and maintains insertion order since Python 3.7."
+  },
+  {
+    "instruction": "Write a Python generator that yields Fibonacci numbers.",
+    "input": "",
+    "output": "```python\nfrom typing import Generator\n\ndef fibonacci() -> Generator[int, None, None]:\n    \"\"\"Yield an infinite sequence of Fibonacci numbers.\"\"\"\n    a, b = 0, 1\n    while True:\n        yield a\n        a, b = b, a + b\n\n# Usage:\nfib = fibonacci()\nfirst_10 = [next(fib) for _ in range(10)]\n# [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]\n\n# Or with itertools:\nfrom itertools import islice\nlist(islice(fibonacci(), 10))\n```\nGenerators are memory-efficient since they compute values lazily — only one Fibonacci number is in memory at a time, regardless of how many you generate."
+  },
+  {
+    "instruction": "Explain the difference between Docker images and containers.",
+    "input": "",
+    "output": "A **Docker image** is a read-only template containing the application code, runtime, libraries, and dependencies. Think of it as a class definition or a blueprint.\n\nA **Docker container** is a running instance of an image. Think of it as an object instantiated from the class. It has its own writable layer on top of the image's read-only layers.\n\nKey differences:\n- **State**: Images are immutable; containers have mutable state\n- **Lifecycle**: Images are built once; containers are created, started, stopped, destroyed\n- **Storage**: Images use layered filesystem (shared between containers); containers add a thin writable layer\n- **Multiplicity**: One image can spawn many containers, each independent\n\nAnalogy: An image is like a recipe, a container is like the actual dish being cooked from that recipe. You can cook multiple dishes from the same recipe, each with slight variations."
+  },
+  {
+    "instruction": "Write a Python function to flatten a nested dictionary.",
+    "input": "{'a': 1, 'b': {'c': 2, 'd': {'e': 3}}, 'f': 4}",
+    "output": "```python\ndef flatten_dict(\n    d: dict, parent_key: str = '', sep: str = '.'\n) -> dict[str, any]:\n    \"\"\"Flatten a nested dictionary with dot-separated keys.\"\"\"\n    items: list[tuple[str, any]] = []\n    for k, v in d.items():\n        new_key = f\"{parent_key}{sep}{k}\" if parent_key else k\n        if isinstance(v, dict):\n            items.extend(flatten_dict(v, new_key, sep).items())\n        else:\n            items.append((new_key, v))\n    return dict(items)\n\n# Usage:\nnested = {'a': 1, 'b': {'c': 2, 'd': {'e': 3}}, 'f': 4}\nflatten_dict(nested)\n# {'a': 1, 'b.c': 2, 'b.d.e': 3, 'f': 4}\n```"
+  },
+  {
+    "instruction": "What are the benefits and drawbacks of NoSQL databases?",
+    "input": "",
+    "output": "**Benefits**:\n- **Flexible schema**: No rigid table structure; easy to evolve data models\n- **Horizontal scalability**: Designed to scale across commodity servers\n- **High performance**: Optimized for specific access patterns (key-value, document, graph)\n- **High availability**: Built-in replication and partition tolerance\n- **Developer productivity**: Natural mapping to application objects (especially document DBs)\n\n**Drawbacks**:\n- **Limited ACID transactions**: Most sacrifice strong consistency for availability\n- **No standard query language**: Each database has its own query API\n- **Data duplication**: Denormalization leads to storage overhead and update complexity\n- **Weaker tooling**: Less mature ecosystem compared to relational databases\n- **Eventual consistency**: Can lead to stale reads in distributed scenarios\n\n**When to use**: High-volume reads/writes, flexible schemas, horizontal scaling needs, real-time applications.\n**When to avoid**: Complex relationships, strict ACID requirements, complex reporting/analytics."
+  },
+  {
+    "instruction": "Implement a rate limiter using the token bucket algorithm.",
+    "input": "",
+    "output": "```python\nimport time\nfrom threading import Lock\n\nclass TokenBucket:\n    def __init__(self, rate: float, capacity: int):\n        \"\"\"\n        Args:\n            rate: Tokens added per second\n            capacity: Maximum tokens in bucket\n        \"\"\"\n        self.rate = rate\n        self.capacity = capacity\n        self.tokens = capacity\n        self.last_refill = time.monotonic()\n        self._lock = Lock()\n\n    def _refill(self) -> None:\n        now = time.monotonic()\n        elapsed = now - self.last_refill\n        self.tokens = min(self.capacity, self.tokens + elapsed * self.rate)\n        self.last_refill = now\n\n    def consume(self, tokens: int = 1) -> bool:\n        \"\"\"Try to consume tokens. Returns True if allowed.\"\"\"\n        with self._lock:\n            self._refill()\n            if self.tokens >= tokens:\n                self.tokens -= tokens\n                return True\n            return False\n\n# Usage:\nlimiter = TokenBucket(rate=10, capacity=100)  # 10 req/s, burst of 100\nif limiter.consume():\n    print(\"Request allowed\")\nelse:\n    print(\"Rate limited\")\n```\nThread-safe via Lock. Tokens refill continuously based on elapsed time rather than a fixed interval."
+  },
+  {
+    "instruction": "Explain what Kubernetes pods, services, and deployments are.",
+    "input": "",
+    "output": "**Pod**: The smallest deployable unit in Kubernetes. A pod wraps one or more containers that share network (same IP) and storage. Usually one container per pod, but sidecar patterns use multiple (e.g., app + log collector). Pods are ephemeral — they can be terminated and recreated.\n\n**Service**: A stable network endpoint that routes traffic to a set of pods. Since pods have dynamic IPs, services provide a fixed IP/DNS name and load balance across healthy pods. Types: ClusterIP (internal), NodePort (external via node port), LoadBalancer (cloud LB).\n\n**Deployment**: A declarative specification for managing pods. You define the desired state (image, replicas, resources), and the Deployment controller ensures it's maintained. Handles rolling updates, rollbacks, and scaling. Creates ReplicaSets under the hood.\n\nRelationship: Deployment manages ReplicaSets → ReplicaSets manage Pods → Services route traffic to Pods."
+  },
+  {
+    "instruction": "Write a Python dataclass with validation.",
+    "input": "Create a Temperature class that stores a value in Celsius, validates it's above absolute zero, and can convert to Fahrenheit and Kelvin.",
+    "output": "```python\nfrom dataclasses import dataclass\n\nABSOLUTE_ZERO_C = -273.15\n\n@dataclass\nclass Temperature:\n    celsius: float\n\n    def __post_init__(self) -> None:\n        if self.celsius < ABSOLUTE_ZERO_C:\n            raise ValueError(\n                f\"Temperature {self.celsius}°C is below absolute zero ({ABSOLUTE_ZERO_C}°C)\"\n            )\n\n    @property\n    def fahrenheit(self) -> float:\n        return self.celsius * 9 / 5 + 32\n\n    @property\n    def kelvin(self) -> float:\n        return self.celsius - ABSOLUTE_ZERO_C\n\n    def __str__(self) -> str:\n        return f\"{self.celsius:.1f}°C ({self.fahrenheit:.1f}°F, {self.kelvin:.1f}K)\"\n\n# Usage:\nt = Temperature(100)\nprint(t)            # 100.0°C (212.0°F, 373.1K)\nprint(t.kelvin)     # 373.15\n# Temperature(-300)  # raises ValueError\n```"
+  },
+  {
+    "instruction": "What is eventual consistency and when is it acceptable?",
+    "input": "",
+    "output": "**Eventual consistency** is a consistency model where, given no new updates, all replicas of data will eventually converge to the same value. After a write, reads might temporarily return stale data, but will eventually return the updated value.\n\n**How it works**: When data is written to one node, it propagates to other nodes asynchronously. During propagation, different nodes may serve different versions.\n\n**When it's acceptable**:\n- Social media feeds (seeing a post a few seconds late is fine)\n- Product reviews and ratings\n- User activity logs and analytics\n- DNS resolution (TTL-based caching)\n- Shopping cart contents (before checkout)\n\n**When it's NOT acceptable**:\n- Bank account balances (overdraft risk)\n- Inventory counts (overselling risk)\n- Booking systems (double-booking)\n- Authentication tokens (security risk)\n\n**Mitigation strategies**: Read-your-own-writes consistency, monotonic reads, quorum reads/writes."
+  },
+  {
+    "instruction": "Generate test data for a user management system.",
+    "input": "Generate 5 sample users with realistic data for testing.",
+    "output": "```json\n[\n  {\n    \"id\": \"usr_a1b2c3\",\n    \"name\": \"Sarah Chen\",\n    \"email\": \"sarah.chen@example.com\",\n    \"role\": \"admin\",\n    \"department\": \"Engineering\",\n    \"created_at\": \"2024-01-15T09:30:00Z\",\n    \"last_login\": \"2024-10-28T14:22:00Z\",\n    \"is_active\": true\n  },\n  {\n    \"id\": \"usr_d4e5f6\",\n    \"name\": \"Marcus Johnson\",\n    \"email\": \"m.johnson@example.com\",\n    \"role\": \"developer\",\n    \"department\": \"Engineering\",\n    \"created_at\": \"2024-03-22T11:00:00Z\",\n    \"last_login\": \"2024-10-27T16:45:00Z\",\n    \"is_active\": true\n  },\n  {\n    \"id\": \"usr_g7h8i9\",\n    \"name\": \"Priya Patel\",\n    \"email\": \"priya.patel@example.com\",\n    \"role\": \"manager\",\n    \"department\": \"Product\",\n    \"created_at\": \"2023-11-08T08:15:00Z\",\n    \"last_login\": \"2024-10-28T09:10:00Z\",\n    \"is_active\": true\n  },\n  {\n    \"id\": \"usr_j1k2l3\",\n    \"name\": \"Tom Eriksson\",\n    \"email\": \"t.eriksson@example.com\",\n    \"role\": \"developer\",\n    \"department\": \"Data Science\",\n    \"created_at\": \"2024-06-01T13:45:00Z\",\n    \"last_login\": \"2024-09-15T11:30:00Z\",\n    \"is_active\": false\n  },\n  {\n    \"id\": \"usr_m4n5o6\",\n    \"name\": \"Aisha Williams\",\n    \"email\": \"aisha.w@example.com\",\n    \"role\": \"developer\",\n    \"department\": \"Engineering\",\n    \"created_at\": \"2024-08-19T10:00:00Z\",\n    \"last_login\": \"2024-10-28T17:55:00Z\",\n    \"is_active\": true\n  }\n]\n```\nIncludes diverse names, mix of roles, departments, active/inactive status, and realistic timestamps."
+  },
+  {
+    "instruction": "Explain how indexes work in databases and when to use them.",
+    "input": "",
+    "output": "A database **index** is a data structure (typically B-tree or hash) that speeds up data retrieval at the cost of additional storage and slower writes.\n\n**How B-tree indexes work**:\n- Creates a sorted, balanced tree structure on the indexed column(s)\n- Lookup: O(log n) instead of O(n) full table scan\n- The tree's leaf nodes contain pointers to actual table rows\n\n**When to add indexes**:\n- Columns frequently used in WHERE clauses\n- Columns used in JOIN conditions\n- Columns used in ORDER BY / GROUP BY\n- High-cardinality columns (many unique values)\n\n**When NOT to index**:\n- Small tables (full scan is fast enough)\n- Columns with low cardinality (e.g., boolean)\n- Tables with heavy write loads (each write updates the index)\n- Columns rarely used in queries\n\n**Types**: Single-column, composite (multi-column), unique, partial, covering, full-text.\n\n**Rule of thumb**: Index columns you query on, but don't over-index — each index slows writes and uses disk space."
+  },
+  {
+    "instruction": "Write a Python async function to fetch multiple URLs concurrently.",
+    "input": "",
+    "output": "```python\nimport asyncio\nimport httpx\nfrom typing import Any\n\nasync def fetch_all(\n    urls: list[str], timeout: float = 10.0\n) -> list[dict[str, Any]]:\n    \"\"\"Fetch multiple URLs concurrently, returning results.\"\"\"\n    async with httpx.AsyncClient(timeout=timeout) as client:\n        tasks = [_fetch_one(client, url) for url in urls]\n        return await asyncio.gather(*tasks)\n\nasync def _fetch_one(\n    client: httpx.AsyncClient, url: str\n) -> dict[str, Any]:\n    \"\"\"Fetch a single URL with error handling.\"\"\"\n    try:\n        response = await client.get(url)\n        return {\n            \"url\": url,\n            \"status\": response.status_code,\n            \"body\": response.text[:500],\n            \"error\": None,\n        }\n    except Exception as e:\n        return {\n            \"url\": url,\n            \"status\": None,\n            \"body\": None,\n            \"error\": str(e),\n        }\n\n# Usage:\nurls = [\"https://example.com\", \"https://httpbin.org/get\"]\nresults = asyncio.run(fetch_all(urls))\n```\nUses `httpx` (async HTTP client), `asyncio.gather` for concurrency, and graceful error handling per URL so one failure doesn't cancel others."
+  },
+  {
+    "instruction": "Simplify the following logical expression.",
+    "input": "(A AND B) OR (A AND NOT B) OR (NOT A AND B)",
+    "output": "Let's simplify step by step:\n\n1. Start: (A AND B) OR (A AND NOT B) OR (NOT A AND B)\n\n2. Factor out A from the first two terms:\n   A AND (B OR NOT B) OR (NOT A AND B)\n\n3. B OR NOT B = True (tautology):\n   A AND True OR (NOT A AND B)\n\n4. A AND True = A:\n   A OR (NOT A AND B)\n\n5. Apply absorption law — A OR (NOT A AND B) = A OR B:\n   **A OR B**\n\nThe simplified expression is: **A OR B**\n\nVerification truth table:\n| A | B | Original | A OR B |\n|---|---|----------|--------|\n| 0 | 0 | 0        | 0      |\n| 0 | 1 | 1        | 1      |\n| 1 | 0 | 1        | 1      |\n| 1 | 1 | 1        | 1      |"
+  },
+  {
+    "instruction": "Explain the MapReduce programming model.",
+    "input": "",
+    "output": "MapReduce is a programming model for processing large datasets in parallel across a distributed cluster.\n\n**Two phases**:\n\n1. **Map Phase**: Takes input key-value pairs and produces intermediate key-value pairs. Each mapper processes a subset of data independently.\n   - Input: (document_id, text) → Output: (word, 1) for each word\n\n2. **Reduce Phase**: Aggregates all intermediate values for each key. Reducers process groups independently.\n   - Input: (word, [1, 1, 1, ...]) → Output: (word, total_count)\n\n**Word count example**:\n```\nMap(\"doc1\", \"hello world hello\") → [(\"hello\", 1), (\"world\", 1), (\"hello\", 1)]\nShuffle & Sort → {\"hello\": [1, 1], \"world\": [1]}\nReduce(\"hello\", [1, 1]) → (\"hello\", 2)\nReduce(\"world\", [1]) → (\"world\", 1)\n```\n\n**Key properties**: Automatic parallelization, fault tolerance (rerun failed tasks), data locality (move computation to data). Hadoop implements MapReduce; modern alternatives include Spark (in-memory, more flexible DAG execution)."
+  },
+  {
+    "instruction": "Write a comprehensive .gitignore for a Python machine learning project.",
+    "input": "",
+    "output": "```gitignore\n# Python\n__pycache__/\n*.py[cod]\n*$py.class\n*.so\n*.egg-info/\ndist/\nbuild/\n*.egg\n\n# Virtual environments\nvenv/\n.venv/\nenv/\n\n# IDE\n.vscode/\n.idea/\n*.swp\n*.swo\n.project\n.settings/\n\n# Jupyter\n.ipynb_checkpoints/\n*.ipynb_meta\n\n# ML artifacts\n*.pt\n*.pth\n*.ckpt\n*.safetensors\n*.bin\n*.onnx\nmodel_outputs/\ncheckpoints/\nruns/\n\n# Data (keep samples, ignore large files)\ndata/raw/\ndata/processed/\n*.csv\n*.parquet\n*.arrow\n!data/sample/\n\n# Weights & Biases\nwandb/\n\n# Environment\n.env\n.env.local\n\n# Cache\n.cache/\n*.cache\n.huggingface/\n\n# OS\n.DS_Store\nThumbs.db\n\n# Coverage\nhtmlcov/\n.coverage\n*.cover\n```\nOrganized by category with comments. Excludes large ML artifacts while keeping sample data via negation pattern."
+  }
+]
