@@ -1,0 +1,55 @@
+# Mistral-7B QLoRA Fine-Tuning Configuration
+# -------------------------------------------
+
+# Model
+model_name: "mistralai/Mistral-7B-v0.3"
+dataset_name: ""
+dataset_split: "train"
+output_dir: "outputs/mistral-7b-qlora"
+
+# LoRA
+lora_r: 16
+lora_alpha: 32
+lora_dropout: 0.05
+target_modules:
+  - q_proj
+  - k_proj
+  - v_proj
+  - o_proj
+  - gate_proj
+  - up_proj
+  - down_proj
+
+# Quantization (QLoRA)
+load_in_4bit: true
+bnb_4bit_quant_type: "nf4"
+bnb_4bit_compute_dtype: "bfloat16"
+bnb_4bit_use_double_quant: true
+
+# Training
+num_epochs: 3
+per_device_train_batch_size: 4
+per_device_eval_batch_size: 4
+gradient_accumulation_steps: 4
+learning_rate: 2.0e-4
+weight_decay: 0.01
+warmup_ratio: 0.03
+lr_scheduler_type: "cosine"
+max_seq_length: 2048
+max_grad_norm: 0.3
+optim: "paged_adamw_32bit"
+
+# Save / Eval
+save_steps: 100
+eval_steps: 100
+save_total_limit: 3
+logging_steps: 10
+eval_strategy: "steps"
+
+# Misc
+bf16: true
+fp16: false
+gradient_checkpointing: true
+group_by_length: true
+seed: 42
+report_to: "wandb"
