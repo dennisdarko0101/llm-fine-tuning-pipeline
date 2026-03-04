@@ -1,6 +1,6 @@
 # Project Handoff
 
-## Current Status: Phase 2, Steps 3-4 — QLoRA Training Pipeline (Complete)
+## Current Status: Phase 3, Steps 7-8 — Evaluation & Inference (Complete)
 
 ### What's Done
 
@@ -72,14 +72,59 @@
   - Full pipeline: config → data → model → LoRA → train → save
   - Dry-run mode for setup verification without GPU training
   - Configurable: --config, --dataset, --template, --output-dir, --no-wandb
-- `docs/TRAINING_GUIDE.md` — Educational guide:
-  - QLoRA explanation with memory comparison table
-  - LoRA low-rank decomposition walkthrough
-  - Hyperparameter guide with recommendations
-  - Target module selection strategies
-  - Common issues and solutions (OOM, overfitting, catastrophic forgetting)
-- Tests: 37+ tests across test_quantization.py, test_trainer.py, test_callbacks.py
-  - All tests run without GPU using mocks for models and CUDA
+- `docs/TRAINING_GUIDE.md` — Educational guide
+
+#### Steps 5-6: Evaluation Pipeline (Complete)
+
+- `src/evaluation/evaluator.py` — Model evaluation:
+  - `ModelEvaluator`: Evaluate models with perplexity, BLEU/ROUGE, task accuracy
+  - `evaluate_perplexity()`: Compute perplexity on dataset with batched inference
+  - `evaluate_generation()`: BLEU and ROUGE-1/2/L for generated vs reference text
+  - `evaluate_task_accuracy()`: Exact-match accuracy for classification-style tasks
+  - `evaluate_all()`: Run full evaluation suite, return `EvaluationResult`
+  - Built-in n-gram BLEU, ROUGE-1/2/L, and LCS-based ROUGE-L implementations
+- `src/evaluation/benchmark.py` — Model comparison:
+  - `ModelBenchmark`: Evaluate multiple models on same dataset
+  - `ComparisonReport`: Report with best model selection, improvement calculation
+  - `get_best_model()`: Find best model by any metric
+  - `get_improvement()`: Calculate absolute/relative improvement between base and fine-tuned
+- `src/evaluation/human_eval.py` — Human evaluation support:
+  - `HumanEvalGenerator`: Generate samples for manual review
+  - `GeneratedSample`: Dataclass for prompt/reference/generated triples
+  - Export to Markdown (with rating checkboxes), CSV, and JSON formats
+  - Reproducible sampling with configurable seed
+- `scripts/evaluate.py` — Evaluation CLI:
+  - Full pipeline: load dataset → load model → evaluate → save results
+  - Optional human eval sample generation (--human-eval N)
+  - W&B metrics logging
+
+#### Steps 7-8: Inference Pipeline (Complete)
+
+- `src/inference/model_loader.py` — Model loading:
+  - `ModelLoader.load_base_model()`: Load base pretrained model + tokenizer
+  - `ModelLoader.load_finetuned()`: Load base + apply LoRA adapters
+  - `ModelLoader.load_merged()`: Merge LoRA into base, optional save
+  - `ModelLoader.load_from_checkpoint()`: Load from local checkpoint directory
+  - CPU fallback when no GPU available
+- `src/inference/predictor.py` — Text generation:
+  - `Predictor.predict()`: Single prompt generation with timing
+  - `Predictor.predict_stream()`: Token-by-token streaming via TextIteratorStreamer
+  - `Predictor.predict_batch()`: Batched generation for multiple prompts
+  - `GenerationConfig`: Temperature, top-p, top-k, repetition penalty, beam search
+  - `PredictionResult`: Generated text, token count, timing, tokens/second
+- `src/inference/api.py` — FastAPI inference server:
+  - `POST /predict`: Single prediction with configurable generation params
+  - `POST /predict/stream`: Streaming text generation (SSE)
+  - `POST /predict/batch`: Batch prediction (up to 32 prompts)
+  - `GET /health`: Health check with model status
+  - `GET /model/info`: Model name, device, parameters
+  - Pydantic request/response validation
+  - Proper error handling (503 when no model loaded, 422 for validation)
+- `scripts/inference.py` — Inference CLI:
+  - Interactive REPL with `set key=value` config adjustment
+  - Streaming mode (`stream` command in REPL)
+  - Single prediction mode (--mode single --prompt "...")
+  - API server mode (--mode server --port 8000)
 
 ### Test Summary
 
@@ -93,12 +138,13 @@
 | test_quantization.py | 16 | BnB config, LoRA config, param stats, GPU fallback |
 | test_trainer.py | 15 | TrainResult, training args, tokenizer, save, train |
 | test_callbacks.py | 16 | Early stopping, checkpoints, logging |
-| **Total** | **~148** | |
+| test_evaluator.py | 28 | EvaluationResult, BLEU, ROUGE, LCS, perplexity, accuracy |
+| test_predictor.py | 16 | PredictionResult, GenerationConfig, predict, batch, kwargs |
+| test_inference.py | 14 | Health, model info, predict, stream, batch, configure |
+| **Total** | **218** | |
 
 ### Next Steps
 
-- **Phase 2**: Evaluation pipeline (metrics, benchmarks)
-- **Phase 3**: Inference server (FastAPI)
 - **Phase 4**: SageMaker deployment
 - **Phase 5**: Docker + end-to-end integration
 
@@ -119,3 +165,8 @@
 - `packing=False` — one sample per sequence for predictable training behavior
 - Early stopping watches eval_loss with configurable patience and min_delta
 - Checkpoint management auto-prunes to keep only top-K by eval_loss
+- Built-in BLEU/ROUGE implementations (no external `evaluate` library dependency)
+- FastAPI for inference server with Pydantic request/response validation
+- Streaming via `TextIteratorStreamer` in separate thread
+- Model loader supports 4 modes: base, fine-tuned (LoRA), merged, checkpoint
+- Inference REPL with runtime-adjustable generation config
