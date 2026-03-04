@@ -1,6 +1,6 @@
 # Project Handoff
 
-## Current Status: Phase 1, Step 2 — Dataset Preparation Pipeline (Complete)
+## Current Status: Phase 2, Steps 3-4 — QLoRA Training Pipeline (Complete)
 
 ### What's Done
 
@@ -43,14 +43,60 @@
   - Train/validation/test splits with configurable ratios
   - Stratified splitting by label column
   - Reproducible with seed parameter
-- `data/sample/sample_alpaca.json` — 50 diverse instruction-following examples
-- `data/sample/sample_chat.json` — 20 multi-turn ShareGPT-format conversations
+- `data/sample/sample_alpaca.json` — 50+ diverse instruction-following examples
+- `data/sample/sample_chat.json` — 18 multi-turn ShareGPT-format conversations
 - `scripts/prepare_data.py` — CLI pipeline: load → validate → format → split → save
-- Tests: 40+ unit tests across test_dataset.py, test_templates.py, test_validator.py
+
+#### Steps 3-4: QLoRA Training Pipeline (Complete)
+
+- `src/training/quantization.py` — Quantization and LoRA setup:
+  - `create_bnb_config()`: 4-bit NF4 quantization with double quantization
+  - `load_quantized_model()`: Load with quantization, gradient checkpointing, CPU fallback
+  - `create_lora_config()`: LoRA adapter config (r, alpha, dropout, target_modules)
+  - `apply_lora()`: Apply adapters, log trainable vs total params
+  - `get_trainable_param_stats()`: Parameter counting and size reporting
+  - GPU availability detection with graceful CPU fallback
+- `src/training/trainer.py` — Fine-tuning orchestration:
+  - `FineTuneTrainer`: Wraps SFTTrainer with config-driven setup
+  - `setup_training_args()`: Maps TrainingConfig → HF TrainingArguments
+  - `setup_trainer()`: Configures SFTTrainer with max_seq_length, packing=False
+  - `train()`: Full training loop with evaluation and model saving
+  - `save_model()`: Save adapter weights + tokenizer
+  - `TrainResult` dataclass: metrics, checkpoint path, training time
+- `src/training/callbacks.py` — Custom training callbacks:
+  - `WandbMetricsCallback`: Detailed W&B logging (loss, LR, grad norm, GPU memory)
+  - `EarlyStoppingCallback`: Stop on val_loss plateau with configurable patience/min_delta
+  - `CheckpointCallback`: Save best-K checkpoints by eval_loss, auto-prune old ones
+  - `LoggingCallback`: Structured progress logging with step, loss, LR, epoch, ETA
+- `scripts/train.py` — Training CLI entry point:
+  - Full pipeline: config → data → model → LoRA → train → save
+  - Dry-run mode for setup verification without GPU training
+  - Configurable: --config, --dataset, --template, --output-dir, --no-wandb
+- `docs/TRAINING_GUIDE.md` — Educational guide:
+  - QLoRA explanation with memory comparison table
+  - LoRA low-rank decomposition walkthrough
+  - Hyperparameter guide with recommendations
+  - Target module selection strategies
+  - Common issues and solutions (OOM, overfitting, catastrophic forgetting)
+- Tests: 37+ tests across test_quantization.py, test_trainer.py, test_callbacks.py
+  - All tests run without GPU using mocks for models and CUDA
+
+### Test Summary
+
+| Test File | Tests | Coverage |
+|-----------|-------|----------|
+| test_settings.py | 1 | Settings defaults |
+| test_training_config.py | 14 | Config defaults, validation, YAML |
+| test_dataset.py | 26 | Loading, format detection, conversion, stats |
+| test_templates.py | 32 | All templates, factory, edge cases |
+| test_validator.py | 28 | Schema, length, duplicates, quality, full pipeline |
+| test_quantization.py | 16 | BnB config, LoRA config, param stats, GPU fallback |
+| test_trainer.py | 15 | TrainResult, training args, tokenizer, save, train |
+| test_callbacks.py | 16 | Early stopping, checkpoints, logging |
+| **Total** | **~148** | |
 
 ### Next Steps
 
-- **Phase 1, Step 3**: QLoRA training loop (SFTTrainer setup, quantization config, training script)
 - **Phase 2**: Evaluation pipeline (metrics, benchmarks)
 - **Phase 3**: Inference server (FastAPI)
 - **Phase 4**: SageMaker deployment
@@ -67,3 +113,9 @@
 - Prompt templates separate training format (with output) from inference format (no output)
 - Validation pipeline runs quality → length → dedup in sequence with detailed reporting
 - Sample data covers coding, writing, reasoning, math, ML topics for realistic testing
+- All training tests use mocks — no GPU required for CI
+- `SFTTrainer` from TRL library handles tokenization and collation
+- CPU fallback in quantization module allows dry-run testing without GPU
+- `packing=False` — one sample per sequence for predictable training behavior
+- Early stopping watches eval_loss with configurable patience and min_delta
+- Checkpoint management auto-prunes to keep only top-K by eval_loss
