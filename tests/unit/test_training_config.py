@@ -3,6 +3,7 @@
 import tempfile
 from pathlib import Path
 
+import pytest
 import yaml
 
 from src.config.training_config import TrainingConfig
@@ -107,11 +108,8 @@ class TestTrainingConfigYaml:
             assert config.model_name == "test/model"
 
     def test_from_yaml_file_not_found(self):
-        try:
+        with pytest.raises(FileNotFoundError):
             TrainingConfig.from_yaml("nonexistent.yaml")
-            assert False, "Should have raised FileNotFoundError"
-        except FileNotFoundError:
-            pass
 
     def test_to_dict(self):
         config = TrainingConfig()

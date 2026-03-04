@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     aws_region: str = "us-east-1"
     aws_profile: str | None = None
     s3_bucket: str = ""
+    aws_sagemaker_role: str = ""
 
     # Weights & Biases
     wandb_project: str = "llm-fine-tuning"

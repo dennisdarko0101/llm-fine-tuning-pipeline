@@ -1,6 +1,6 @@
 # Project Handoff
 
-## Current Status: Phase 3, Steps 7-8 — Evaluation & Inference (Complete)
+## Current Status: All Phases Complete (Steps 1-12)
 
 ### What's Done
 
@@ -9,122 +9,97 @@
 - Project structure with all directories and `__init__.py` files
 - `pyproject.toml` with all production and dev dependencies
 - `src/config/settings.py` — Pydantic Settings for env vars (AWS, W&B, HF, paths)
-- `src/config/training_config.py` — Training hyperparameters dataclass with:
-  - QLoRA defaults (r=16, alpha=32, nf4, bfloat16)
-  - Full validation of all parameters
-  - YAML load/save support
-  - Effective batch size calculation
-- `configs/mistral_7b_qlora.yaml` — Mistral-7B default config
-- `configs/llama3_8b_qlora.yaml` — Llama-3-8B default config (4096 context)
+- `src/config/training_config.py` — Training hyperparameters dataclass with QLoRA defaults
+- `configs/mistral_7b_qlora.yaml` and `configs/llama3_8b_qlora.yaml`
 - `src/utils/logger.py` — Structured logging with structlog
 - `src/utils/wandb_utils.py` — W&B init, metric logging, artifact logging
-- `.env.example` with all required environment variables
-- `Makefile` with targets: install, test, lint, format, train, evaluate, deploy, docker-build
-- `.github/workflows/ci.yml` — CI pipeline (lint + test on Python 3.11/3.12)
-- `.gitignore` — Python + ML artifacts (checkpoints, wandb, safetensors, etc.)
-- `README.md` — Setup instructions and architecture overview
-- `LICENSE` — MIT
+- `.env.example`, `Makefile`, `.github/workflows/ci.yml`, `.gitignore`, `README.md`, `LICENSE`
 
 #### Step 2: Dataset Preparation Pipeline (Complete)
 
-- `src/data/dataset.py` — Dataset loading and formatting:
-  - `DatasetLoader`: Load from HuggingFace Hub, JSON files, CSV files
-  - `DatasetFormatter`: Auto-detect and convert formats (alpaca, dolly, oasst, sharegpt)
-  - `DatasetStats`: Compute statistics (sample counts, lengths, token distribution)
-- `src/data/templates.py` — Prompt templates:
-  - `PromptTemplate` ABC with `format()`, `format_inference()`, `format_train()`
-  - `AlpacaTemplate`, `ChatMLTemplate`, `Llama3Template`, `MistralTemplate`
-  - `TemplateFactory`: Get template by name, register custom templates
-- `src/data/validator.py` — Dataset validation:
-  - `DatasetValidator`: Schema validation, length filtering, duplicate detection, quality checks
-  - `ValidationReport`: Stats on original/filtered counts and removal reasons
-  - Full pipeline via `validate_all()` method
-- `src/data/splitter.py` — Dataset splitting:
-  - Train/validation/test splits with configurable ratios
-  - Stratified splitting by label column
-  - Reproducible with seed parameter
-- `data/sample/sample_alpaca.json` — 50+ diverse instruction-following examples
-- `data/sample/sample_chat.json` — 18 multi-turn ShareGPT-format conversations
-- `scripts/prepare_data.py` — CLI pipeline: load → validate → format → split → save
+- `src/data/dataset.py` — DatasetLoader (HF/JSON/CSV), DatasetFormatter (auto-detect), DatasetStats
+- `src/data/templates.py` — PromptTemplate ABC + Alpaca, ChatML, Llama3, Mistral + TemplateFactory
+- `src/data/validator.py` — DatasetValidator + ValidationReport (schema, length, dedup, quality)
+- `src/data/splitter.py` — Train/val/test splits with stratified support
+- `data/sample/` — 50+ alpaca examples, 18 ShareGPT conversations
+- `scripts/prepare_data.py` — CLI pipeline
 
 #### Steps 3-4: QLoRA Training Pipeline (Complete)
 
-- `src/training/quantization.py` — Quantization and LoRA setup:
-  - `create_bnb_config()`: 4-bit NF4 quantization with double quantization
-  - `load_quantized_model()`: Load with quantization, gradient checkpointing, CPU fallback
-  - `create_lora_config()`: LoRA adapter config (r, alpha, dropout, target_modules)
-  - `apply_lora()`: Apply adapters, log trainable vs total params
-  - `get_trainable_param_stats()`: Parameter counting and size reporting
-  - GPU availability detection with graceful CPU fallback
-- `src/training/trainer.py` — Fine-tuning orchestration:
-  - `FineTuneTrainer`: Wraps SFTTrainer with config-driven setup
-  - `setup_training_args()`: Maps TrainingConfig → HF TrainingArguments
-  - `setup_trainer()`: Configures SFTTrainer with max_seq_length, packing=False
-  - `train()`: Full training loop with evaluation and model saving
-  - `save_model()`: Save adapter weights + tokenizer
-  - `TrainResult` dataclass: metrics, checkpoint path, training time
-- `src/training/callbacks.py` — Custom training callbacks:
-  - `WandbMetricsCallback`: Detailed W&B logging (loss, LR, grad norm, GPU memory)
-  - `EarlyStoppingCallback`: Stop on val_loss plateau with configurable patience/min_delta
-  - `CheckpointCallback`: Save best-K checkpoints by eval_loss, auto-prune old ones
-  - `LoggingCallback`: Structured progress logging with step, loss, LR, epoch, ETA
-- `scripts/train.py` — Training CLI entry point:
-  - Full pipeline: config → data → model → LoRA → train → save
-  - Dry-run mode for setup verification without GPU training
-  - Configurable: --config, --dataset, --template, --output-dir, --no-wandb
+- `src/training/quantization.py` — BnB config, model loading with CPU fallback, LoRA config/apply
+- `src/training/trainer.py` — FineTuneTrainer wrapping SFTTrainer + TrainResult dataclass
+- `src/training/callbacks.py` — WandbMetrics, EarlyStopping, Checkpoint, Logging callbacks
+- `scripts/train.py` — Training CLI with dry-run mode
 - `docs/TRAINING_GUIDE.md` — Educational guide
 
 #### Steps 5-6: Evaluation Pipeline (Complete)
 
-- `src/evaluation/evaluator.py` — Model evaluation:
-  - `ModelEvaluator`: Evaluate models with perplexity, BLEU/ROUGE, task accuracy
-  - `evaluate_perplexity()`: Compute perplexity on dataset with batched inference
-  - `evaluate_generation()`: BLEU and ROUGE-1/2/L for generated vs reference text
-  - `evaluate_task_accuracy()`: Exact-match accuracy for classification-style tasks
-  - `evaluate_all()`: Run full evaluation suite, return `EvaluationResult`
-  - Built-in n-gram BLEU, ROUGE-1/2/L, and LCS-based ROUGE-L implementations
-- `src/evaluation/benchmark.py` — Model comparison:
-  - `ModelBenchmark`: Evaluate multiple models on same dataset
-  - `ComparisonReport`: Report with best model selection, improvement calculation
-  - `get_best_model()`: Find best model by any metric
-  - `get_improvement()`: Calculate absolute/relative improvement between base and fine-tuned
-- `src/evaluation/human_eval.py` — Human evaluation support:
-  - `HumanEvalGenerator`: Generate samples for manual review
-  - `GeneratedSample`: Dataclass for prompt/reference/generated triples
-  - Export to Markdown (with rating checkboxes), CSV, and JSON formats
-  - Reproducible sampling with configurable seed
-- `scripts/evaluate.py` — Evaluation CLI:
-  - Full pipeline: load dataset → load model → evaluate → save results
-  - Optional human eval sample generation (--human-eval N)
-  - W&B metrics logging
+- `src/evaluation/evaluator.py` — Perplexity, BLEU, ROUGE-1/2/L, task accuracy + EvaluationResult
+- `src/evaluation/benchmark.py` — ModelBenchmark + ComparisonReport
+- `src/evaluation/human_eval.py` — HumanEvalGenerator with Markdown/CSV/JSON export
+- `scripts/evaluate.py` — Evaluation CLI with W&B logging
 
 #### Steps 7-8: Inference Pipeline (Complete)
 
-- `src/inference/model_loader.py` — Model loading:
-  - `ModelLoader.load_base_model()`: Load base pretrained model + tokenizer
-  - `ModelLoader.load_finetuned()`: Load base + apply LoRA adapters
-  - `ModelLoader.load_merged()`: Merge LoRA into base, optional save
-  - `ModelLoader.load_from_checkpoint()`: Load from local checkpoint directory
-  - CPU fallback when no GPU available
-- `src/inference/predictor.py` — Text generation:
-  - `Predictor.predict()`: Single prompt generation with timing
-  - `Predictor.predict_stream()`: Token-by-token streaming via TextIteratorStreamer
-  - `Predictor.predict_batch()`: Batched generation for multiple prompts
-  - `GenerationConfig`: Temperature, top-p, top-k, repetition penalty, beam search
-  - `PredictionResult`: Generated text, token count, timing, tokens/second
-- `src/inference/api.py` — FastAPI inference server:
-  - `POST /predict`: Single prediction with configurable generation params
-  - `POST /predict/stream`: Streaming text generation (SSE)
-  - `POST /predict/batch`: Batch prediction (up to 32 prompts)
-  - `GET /health`: Health check with model status
-  - `GET /model/info`: Model name, device, parameters
-  - Pydantic request/response validation
-  - Proper error handling (503 when no model loaded, 422 for validation)
-- `scripts/inference.py` — Inference CLI:
-  - Interactive REPL with `set key=value` config adjustment
-  - Streaming mode (`stream` command in REPL)
-  - Single prediction mode (--mode single --prompt "...")
-  - API server mode (--mode server --port 8000)
+- `src/inference/model_loader.py` — Base, fine-tuned, merged, checkpoint loading
+- `src/inference/predictor.py` — Single, streaming, batch prediction + GenerationConfig
+- `src/inference/api.py` — FastAPI server (/predict, /stream, /batch, /health, /model/info)
+- `scripts/inference.py` — Interactive REPL + server + single mode
+
+#### Steps 9-10: Deployment Pipeline (Complete)
+
+- `src/deployment/model_registry.py` — JSON-based model registry:
+  - `ModelRegistry`: register, get_latest, get_best, list_models, update_status, delete
+  - `ModelRecord`: name, version, path, metrics, timestamp, status
+  - File-based persistence with automatic save/load
+- `src/deployment/sagemaker.py` — SageMaker deployment:
+  - `SageMakerDeployer`: package_model, create_model, deploy_endpoint, invoke_endpoint, delete_endpoint
+  - `EndpointInfo` dataclass: name, arn, instance_type, status, creation_time
+  - HuggingFace inference container image configuration
+  - Endpoint create/update with InService wait loop
+- `src/deployment/infrastructure.py` — AWS infrastructure:
+  - `AWSInfrastructure`: setup_s3_bucket, setup_iam_role, verify_permissions, estimate_cost
+  - Cost estimation for 9 GPU instance types
+  - Permission verification (STS identity, S3 access, IAM role)
+- `scripts/deploy.py` — Deployment CLI:
+  - Actions: package, deploy, invoke, delete, status, estimate
+  - Confirmation prompts for deploy/delete
+  - Cost estimates before deployment
+
+#### Steps 11-12: CI/CD & Final Polish (Complete)
+
+- `.github/workflows/ci.yml` — CI with coverage threshold (80%) + secret scanning
+- `.github/workflows/train.yml` — Manual training workflow with GPU runner support
+- `.github/workflows/deploy.yml` — Manual deployment with smoke test + rollback
+- `docker/Dockerfile.train` — CUDA 12.1 training image
+- `docker/Dockerfile.inference` — Lightweight inference image with health check
+- `Makefile` — 15 targets: install, test, lint, format, train, evaluate, deploy, inference, docker
+- `README.md` — Portfolio-ready with architecture diagram, quick start, API reference
+- `docs/ARCHITECTURE.md` — System design, data flow diagrams, design decisions
+- `docs/DEPLOYMENT.md` — Local, Docker, SageMaker deployment guide with cost estimation
+- `docs/RESULTS.md` — Training results template
+- `CONTRIBUTING.md` — Development workflow and code standards
+
+### Complete File Inventory
+
+```
+src/
+├── config/settings.py, training_config.py
+├── data/dataset.py, templates.py, validator.py, splitter.py
+├── training/quantization.py, trainer.py, callbacks.py
+├── evaluation/evaluator.py, benchmark.py, human_eval.py
+├── inference/model_loader.py, predictor.py, api.py
+├── deployment/model_registry.py, sagemaker.py, infrastructure.py
+└── utils/logger.py, wandb_utils.py
+
+scripts/prepare_data.py, train.py, evaluate.py, inference.py, deploy.py
+
+tests/unit/ (13 files), tests/integration/ (1 file)
+
+docker/Dockerfile.train, Dockerfile.inference
+.github/workflows/ci.yml, train.yml, deploy.yml
+docs/TRAINING_GUIDE.md, ARCHITECTURE.md, DEPLOYMENT.md, RESULTS.md, HANDOFF.md
+```
 
 ### Test Summary
 
@@ -141,32 +116,41 @@
 | test_evaluator.py | 28 | EvaluationResult, BLEU, ROUGE, LCS, perplexity, accuracy |
 | test_predictor.py | 16 | PredictionResult, GenerationConfig, predict, batch, kwargs |
 | test_inference.py | 14 | Health, model info, predict, stream, batch, configure |
-| **Total** | **218** | |
+| test_model_registry.py | 20 | ModelRecord, registry CRUD, versioning, best model |
+| test_sagemaker.py | 12 | EndpointInfo, package, create, deploy, invoke, delete |
+| test_infrastructure.py | 14 | S3 setup, IAM role, permissions, cost estimation |
+| **Total** | **264** | |
 
-### Next Steps
+### Known Limitations
 
-- **Phase 4**: SageMaker deployment
-- **Phase 5**: Docker + end-to-end integration
+- Model registry is single-user (JSON file, no concurrent access locking)
+- BLEU/ROUGE are basic n-gram implementations (not the official sacrebleu/rouge-score)
+- SageMaker deployment uses HF inference container (not custom)
+- No GPU required for any tests — all model operations are mocked
+- No multi-GPU/distributed training support (single GPU only)
+- Streaming uses threading (not async) for model.generate compatibility
 
 ### Key Decisions
 
-- Using dataclass (not Pydantic) for `TrainingConfig` to stay compatible with HF Trainer serialization
-- `paged_adamw_32bit` optimizer for QLoRA (recommended by QLoRA paper)
-- Llama-3 config uses 4096 context length vs Mistral's 2048
-- W&B is default `report_to` target; can be set to `"none"` to disable
-- Dataset formats auto-detected from column names; explicit format can be specified
-- Unified internal format: `{instruction, input, output}` for all datasets
-- Prompt templates separate training format (with output) from inference format (no output)
-- Validation pipeline runs quality → length → dedup in sequence with detailed reporting
-- Sample data covers coding, writing, reasoning, math, ML topics for realistic testing
-- All training tests use mocks — no GPU required for CI
-- `SFTTrainer` from TRL library handles tokenization and collation
-- CPU fallback in quantization module allows dry-run testing without GPU
-- `packing=False` — one sample per sequence for predictable training behavior
-- Early stopping watches eval_loss with configurable patience and min_delta
-- Checkpoint management auto-prunes to keep only top-K by eval_loss
-- Built-in BLEU/ROUGE implementations (no external `evaluate` library dependency)
-- FastAPI for inference server with Pydantic request/response validation
-- Streaming via `TextIteratorStreamer` in separate thread
-- Model loader supports 4 modes: base, fine-tuned (LoRA), merged, checkpoint
-- Inference REPL with runtime-adjustable generation config
+- dataclass for `TrainingConfig` (HF Trainer serialization compatibility)
+- `paged_adamw_32bit` optimizer (QLoRA paper recommendation)
+- `packing=False` in SFTTrainer (predictable training behavior)
+- Built-in BLEU/ROUGE (no external `evaluate` library dependency)
+- JSON model registry (no database needed for single-user workflows)
+- Separate Dockerfiles for training (CUDA) vs inference (CPU-slim)
+- CPU fallback everywhere (dry-run testing and CI without GPU)
+- structlog for production-grade structured logging
+- Factory pattern for prompt templates (runtime registration)
+- FastAPI with Pydantic validation for inference API
+- boto3 with injectable sessions (testable with mocks)
+
+### Future Improvements
+
+- Multi-GPU / DeepSpeed distributed training
+- Model merging export (GGUF, ONNX, vLLM)
+- A/B testing between endpoints
+- Prometheus metrics export
+- Redis-based model registry for multi-user
+- DPO/RLHF training support
+- Automated hyperparameter search
+- Data flywheel (collect inference feedback → retrain)

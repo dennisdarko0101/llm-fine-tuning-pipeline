@@ -2,14 +2,13 @@
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
-import torch
 from fastapi.testclient import TestClient
 
 from src.inference.api import _state, configure_app, create_app
-from src.inference.predictor import GenerationConfig, Predictor, PredictionResult
+from src.inference.predictor import PredictionResult, Predictor
 
 
 @pytest.fixture()

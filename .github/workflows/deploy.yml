@@ -1,0 +1,87 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      model_artifact:
+        description: "Path to model directory or artifact"
+        required: true
+        default: "outputs/model/final"
+      instance_type:
+        description: "SageMaker instance type"
+        required: true
+        default: "ml.g5.xlarge"
+      endpoint_name:
+        description: "SageMaker endpoint name"
+        required: true
+        default: "llm-ft-endpoint"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -e .
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION || 'us-east-1' }}
+
+      - name: Download model artifact
+        if: startsWith(inputs.model_artifact, 'artifact:')
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.model_artifact }}
+          path: outputs/model/final
+
+      - name: Deploy to SageMaker
+        id: deploy
+        run: |
+          python -m scripts.deploy \
+            --action deploy \
+            --model-path "${{ inputs.model_artifact }}" \
+            --endpoint-name "${{ inputs.endpoint_name }}" \
+            --instance-type "${{ inputs.instance_type }}" \
+            --yes
+
+      - name: Smoke test
+        id: smoke_test
+        run: |
+          python -m scripts.deploy \
+            --action invoke \
+            --endpoint-name "${{ inputs.endpoint_name }}" \
+            --prompt "Hello, how are you?"
+
+      - name: Rollback on failure
+        if: failure() && steps.deploy.outcome == 'success'
+        run: |
+          echo "::warning::Deployment smoke test failed, rolling back..."
+          python -m scripts.deploy \
+            --action delete \
+            --endpoint-name "${{ inputs.endpoint_name }}" \
+            --yes
+
+      - name: Post deployment summary
+        if: success()
+        run: |
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Parameter | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Endpoint | \`${{ inputs.endpoint_name }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Instance | \`${{ inputs.instance_type }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Model | \`${{ inputs.model_artifact }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Status | Deployed |" >> $GITHUB_STEP_SUMMARY

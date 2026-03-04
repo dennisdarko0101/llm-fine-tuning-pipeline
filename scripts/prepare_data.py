@@ -174,7 +174,7 @@ def main() -> None:
 
     # Show an example
     if len(formatted) > 0:
-        print(f"\n  Example (first 200 chars):")
+        print("\n  Example (first 200 chars):")
         print(f"  {formatted[0]['text'][:200]}...")
 
     # Stage 6: Split dataset

@@ -219,7 +219,7 @@ def main() -> None:
         callbacks=callbacks,
     )
 
-    print(f"  Trainer ready")
+    print("  Trainer ready")
     print(f"  Callbacks: {[type(c).__name__ for c in callbacks]}")
 
     if args.dry_run:

@@ -1,0 +1,82 @@
+name: Train
+
+on:
+  workflow_dispatch:
+    inputs:
+      config_file:
+        description: "Training config YAML path"
+        required: true
+        default: "configs/mistral_7b_qlora.yaml"
+      dataset:
+        description: "Dataset source (path or HF name)"
+        required: true
+        default: "data/sample/sample_alpaca.json"
+      dry_run:
+        description: "Dry run (no GPU training)"
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  train:
+    runs-on: ${{ inputs.dry_run && 'ubuntu-latest' || 'self-hosted-gpu' }}
+    timeout-minutes: 360
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
+
+      - name: Install dependencies
+        run: pip install -e .
+
+      - name: Prepare data
+        run: |
+          python -m scripts.prepare_data \
+            --source "${{ inputs.dataset }}" \
+            --output-dir outputs/data
+
+      - name: Train model
+        run: |
+          python -m scripts.train \
+            --config "${{ inputs.config_file }}" \
+            --dataset outputs/data/train.jsonl \
+            --output-dir outputs/model \
+            --no-wandb \
+            ${{ inputs.dry_run && '--dry-run' || '' }}
+
+      - name: Upload model artifact
+        if: ${{ !inputs.dry_run }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: trained-model-${{ github.run_number }}
+          path: outputs/model/final/
+          retention-days: 30
+
+      - name: Post training summary
+        if: always()
+        run: |
+          echo "## Training Run Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Parameter | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Config | \`${{ inputs.config_file }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Dataset | \`${{ inputs.dataset }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Dry Run | ${{ inputs.dry_run }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Runner | ${{ runner.os }} |" >> $GITHUB_STEP_SUMMARY
+          if [ -f outputs/model/final/training_metrics.json ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Metrics" >> $GITHUB_STEP_SUMMARY
+            echo '```json' >> $GITHUB_STEP_SUMMARY
+            cat outputs/model/final/training_metrics.json >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi

@@ -129,8 +129,9 @@ class Predictor:
         Yields:
             Generated text tokens one at a time.
         """
-        from transformers import TextIteratorStreamer
         from threading import Thread
+
+        from transformers import TextIteratorStreamer
 
         config = config or self.default_config
 
@@ -148,8 +149,7 @@ class Predictor:
         thread = Thread(target=self.model.generate, kwargs=gen_kwargs)
         thread.start()
 
-        for text in streamer:
-            yield text
+        yield from streamer
 
         thread.join()
 
@@ -195,7 +195,7 @@ class Predictor:
 
             elapsed = time.time() - start
 
-            for j, (prompt, out_ids) in enumerate(zip(batch, output_ids)):
+            for j, (prompt, out_ids) in enumerate(zip(batch, output_ids, strict=True)):
                 input_len = inputs["input_ids"][j].ne(self.tokenizer.pad_token_id).sum().item()
                 new_tokens = out_ids[input_len:]
                 generated_text = self.tokenizer.decode(new_tokens, skip_special_tokens=True)

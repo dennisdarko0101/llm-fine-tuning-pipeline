@@ -300,7 +300,7 @@ def _compute_bleu(predictions: list[str], references: list[str]) -> float:
     from collections import Counter
 
     total_score = 0.0
-    for pred, ref in zip(predictions, references):
+    for pred, ref in zip(predictions, references, strict=True):
         pred_tokens = pred.lower().split()
         ref_tokens = ref.lower().split()
         if not pred_tokens or not ref_tokens:
@@ -321,13 +321,12 @@ def _compute_bleu(predictions: list[str], references: list[str]) -> float:
 
 def _compute_rouge(predictions: list[str], references: list[str]) -> dict[str, float]:
     """Compute ROUGE-1, ROUGE-2, and ROUGE-L F1 scores."""
-    from collections import Counter
 
     rouge_1_scores = []
     rouge_2_scores = []
     rouge_l_scores = []
 
-    for pred, ref in zip(predictions, references):
+    for pred, ref in zip(predictions, references, strict=True):
         pred_tokens = pred.lower().split()
         ref_tokens = ref.lower().split()
 

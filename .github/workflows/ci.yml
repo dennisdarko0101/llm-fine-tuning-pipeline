@@ -38,5 +38,14 @@ jobs:
       - name: Type check
         run: mypy src/
 
-      - name: Test
-        run: pytest tests/unit/ -v --cov=src --cov-report=term-missing
+      - name: Test with coverage
+        run: pytest tests/ -v --cov=src --cov-report=term-missing --cov-fail-under=80
+
+      - name: Security check - scan for secrets
+        run: |
+          # Check for common secret patterns in tracked files
+          if git grep -lE '(AKIA[A-Z0-9]{16}|sk-[a-zA-Z0-9]{48}|password\s*=\s*["\x27][^"\x27]+["\x27])' -- ':(exclude)*.yml' ':(exclude)*.yaml' ':(exclude)*.md' 2>/dev/null; then
+            echo "::error::Potential secrets detected in source files"
+            exit 1
+          fi
+          echo "No secrets detected"

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 import torch
@@ -16,7 +16,6 @@ from src.evaluation.evaluator import (
     _lcs_f1,
     _ngram_f1,
 )
-
 
 # ---------------------------------------------------------------
 # EvaluationResult
@@ -136,11 +135,11 @@ class TestNgramF1:
     """Tests for n-gram F1 helper."""
 
     def test_unigram_identical(self) -> None:
-        tokens = "a b c".split()
+        tokens = ["a", "b", "c"]
         assert _ngram_f1(tokens, tokens, 1) == pytest.approx(1.0)
 
     def test_bigram_identical(self) -> None:
-        tokens = "a b c d".split()
+        tokens = ["a", "b", "c", "d"]
         assert _ngram_f1(tokens, tokens, 2) == pytest.approx(1.0)
 
     def test_no_overlap(self) -> None:
@@ -155,15 +154,15 @@ class TestLcsF1:
     """Tests for LCS-based ROUGE-L."""
 
     def test_identical(self) -> None:
-        tokens = "a b c d".split()
+        tokens = ["a", "b", "c", "d"]
         assert _lcs_f1(tokens, tokens) == pytest.approx(1.0)
 
     def test_no_overlap(self) -> None:
         assert _lcs_f1(["a", "b"], ["c", "d"]) == 0.0
 
     def test_partial_overlap(self) -> None:
-        pred = "a b c".split()
-        ref = "a c d".split()
+        pred = ["a", "b", "c"]
+        ref = ["a", "c", "d"]
         score = _lcs_f1(pred, ref)
         assert 0.0 < score < 1.0
 

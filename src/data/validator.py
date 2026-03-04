@@ -35,7 +35,7 @@ class ValidationReport:
     def summary(self) -> str:
         """Human-readable summary of the validation report."""
         lines = [
-            f"Validation Report:",
+            "Validation Report:",
             f"  Original samples: {self.original_count}",
             f"  Filtered samples: {self.filtered_count}",
             f"  Removed: {self.removed_count} ({self.removal_rate:.1%})",

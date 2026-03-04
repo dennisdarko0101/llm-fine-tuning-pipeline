@@ -164,8 +164,7 @@ def create_app() -> FastAPI:
         )
 
         def stream_generator():
-            for token in _state.predictor.predict_stream(request.prompt, config=config):
-                yield token
+            yield from _state.predictor.predict_stream(request.prompt, config=config)
 
         return StreamingResponse(stream_generator(), media_type="text/plain")
 

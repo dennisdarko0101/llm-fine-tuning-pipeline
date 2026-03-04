@@ -1,0 +1,32 @@
+FROM python:3.11-slim
+
+LABEL maintainer="Dennis"
+LABEL description="Lightweight inference image for LLM fine-tuning pipeline"
+
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+
+WORKDIR /app
+
+# Install only runtime dependencies
+COPY pyproject.toml .
+RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu && \
+    pip install --no-cache-dir -e .
+
+# Copy project source
+COPY src/ src/
+COPY scripts/ scripts/
+
+# Create model mount point
+RUN mkdir -p /models
+
+# Expose API port
+EXPOSE 8000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD python3 -c "import httpx; r = httpx.get('http://localhost:8000/health'); assert r.status_code == 200"
+
+# Default: start inference server
+ENTRYPOINT ["python3", "-m", "scripts.inference"]
+CMD ["--model", "/models/model", "--mode", "server", "--host", "0.0.0.0", "--port", "8000"]

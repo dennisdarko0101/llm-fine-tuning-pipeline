@@ -98,7 +98,7 @@ def main(argv: list[str] | None = None) -> None:
     # W&B logging
     if not args.no_wandb:
         try:
-            from src.utils.wandb_utils import init_wandb, log_metrics, finish_wandb
+            from src.utils.wandb_utils import finish_wandb, init_wandb, log_metrics
 
             run = init_wandb(
                 run_name=f"eval-{Path(args.model).name}",

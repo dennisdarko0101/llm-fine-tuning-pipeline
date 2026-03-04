@@ -134,13 +134,11 @@ class DatasetSplitter:
         val_idx: list[int] = []
         test_idx: list[int] = []
 
-        for label, indices in label_indices.items():
+        for _label, indices in label_indices.items():
             rng.shuffle(indices)
             n = len(indices)
             n_train = max(1, round(n * train_ratio))
             n_val = round(n * val_ratio)
-            # Ensure at least 1 in train
-            n_test = n - n_train - n_val
 
             train_idx.extend(indices[:n_train])
             val_idx.extend(indices[n_train : n_train + n_val])

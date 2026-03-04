@@ -244,7 +244,7 @@ class DatasetStats:
 
         # Approximate token counts (chars / 4)
         total_lens = [
-            (il + inl + ol) // 4 for il, inl, ol in zip(inst_lens, inp_lens, out_lens)
+            (il + inl + ol) // 4 for il, inl, ol in zip(inst_lens, inp_lens, out_lens, strict=True)
         ]
 
         # Token length distribution buckets
