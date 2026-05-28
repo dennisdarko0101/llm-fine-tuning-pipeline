@@ -17,7 +17,7 @@ WORKDIR /app
 
 # Install Python dependencies first for better layer caching
 COPY pyproject.toml .
-RUN pip install --no-cache-dir -e .
+RUN pip install --no-cache-dir --timeout=300 --retries=10 -e .
 
 # Copy project source
 COPY src/ src/

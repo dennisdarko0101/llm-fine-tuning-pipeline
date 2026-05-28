@@ -10,8 +10,8 @@ WORKDIR /app
 
 # Install only runtime dependencies
 COPY pyproject.toml .
-RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu && \
-    pip install --no-cache-dir -e .
+RUN pip install --no-cache-dir --timeout=300 --retries=10 torch --index-url https://download.pytorch.org/whl/cpu && \
+    pip install --no-cache-dir --timeout=300 --retries=10 -e .
 
 # Copy project source
 COPY src/ src/
